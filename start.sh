@@ -14,6 +14,8 @@ echo "App version: $APP_VERSION"
 # Set the registry login server
 ACR_LOGIN_SERVER=$REGISTRY.azurecr.io
 
+DOCKER_FULL_NAME="$ACR_LOGIN_SERVER/$DOCKER_IMAGE_NAME:$APP_VERSION"
+
 # Authenticate to ACR using Managed Identity
 TOKEN=$(curl -H "Metadata:true" 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/' | jq -r '.access_token')
 
@@ -21,7 +23,7 @@ TOKEN=$(curl -H "Metadata:true" 'http://169.254.169.254/metadata/identity/oauth2
 echo $TOKEN | docker login $ACR_LOGIN_SERVER --username 00000000-0000-0000-0000-000000000000 --password-stdin
 
 # Build the Docker image with the versioned tag
-docker build -t $DOCKER_IMAGE_NAME:$APP_VERSION .
+docker build -t $DOCKER_FULL_NAME .
 
 # Push the image to ACR
-docker push $DOCKER_IMAGE_NAME:$APP_VERSION
+docker push $DOCKER_FULL_NAME
