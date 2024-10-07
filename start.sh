@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Start Docker daemon in the background
+dockerd-entrypoint.sh &
+
+# Wait for Docker daemon to start
+while ! docker info > /dev/null 2>&1; do
+    echo "Waiting for Docker to start..."
+    sleep 2
+done
+
+echo "Docker is running. Proceeding with build..."
+
 # Clone the repo using the Personal Access Token
 GIT_REPO_URL=https://x-access-token:$GIT_PAT_TOKEN@github.com/$REPO.git
 git clone $GIT_REPO_URL /app/repo
